@@ -47,7 +47,9 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -113,7 +115,7 @@ public class ReservationController {
         this.ticketRepository = ticketRepository;
     }
 
-    @RequestMapping(value = "/event/{eventName}/reservation/{reservationId}/book", method = RequestMethod.GET)
+    @GetMapping(value = "/event/{eventName}/reservation/{reservationId}/book")
     public String showPaymentPage(@PathVariable("eventName") String eventName,
                                   @PathVariable("reservationId") String reservationId,
                                   //paypal related parameters
@@ -209,7 +211,7 @@ public class ReservationController {
     }
 
 
-    @RequestMapping(value = "/event/{eventName}/reservation/{reservationId}/success", method = RequestMethod.GET)
+    @GetMapping(value = "/event/{eventName}/reservation/{reservationId}/success")
     public String showConfirmationPage(@PathVariable("eventName") String eventName,
                                        @PathVariable("reservationId") String reservationId,
                                        @RequestParam(value = "confirmation-email-sent", required = false, defaultValue = "false") boolean confirmationEmailSent,
@@ -262,7 +264,7 @@ public class ReservationController {
         }).orElse("redirect:/");
     }
 
-    @RequestMapping(value = "/event/{eventName}/reservation/{reservationId}/failure", method = RequestMethod.GET)
+    @GetMapping(value = "/event/{eventName}/reservation/{reservationId}/failure")
     public String showFailurePage(@PathVariable("eventName") String eventName,
                                        @PathVariable("reservationId") String reservationId,
                                        @RequestParam(value = "confirmation-email-sent", required = false, defaultValue = "false") boolean confirmationEmailSent,
@@ -292,7 +294,7 @@ public class ReservationController {
         return redirectReservation(reservation, eventName, reservationId);
     }
 
-    @RequestMapping(value = "/event/{eventName}/reservation/{reservationId}", method = RequestMethod.GET)
+    @GetMapping(value = "/event/{eventName}/reservation/{reservationId}")
     public String showReservationPage(@PathVariable("eventName") String eventName,
                                       @PathVariable("reservationId") String reservationId,
                                       Model model) {
@@ -304,7 +306,7 @@ public class ReservationController {
         return redirectReservation(ticketReservationManager.findById(reservationId), eventName, reservationId);
     }
 
-    @RequestMapping(value = "/event/{eventName}/reservation/{reservationId}/notfound", method = RequestMethod.GET)
+    @GetMapping(value = "/event/{eventName}/reservation/{reservationId}/notfound")
     public String showNotFoundPage(@PathVariable("eventName") String eventName,
                                    @PathVariable("reservationId") String reservationId,
                                    Model model) {
@@ -326,7 +328,7 @@ public class ReservationController {
         return redirectReservation(reservation, eventName, reservationId);
     }
 
-    @RequestMapping(value = "/event/{eventName}/reservation/{reservationId}/waitingPayment", method = RequestMethod.GET)
+    @GetMapping(value = "/event/{eventName}/reservation/{reservationId}/waitingPayment")
     public String showWaitingPaymentPage(@PathVariable("eventName") String eventName,
                                    @PathVariable("reservationId") String reservationId,
                                    Model model, Locale locale) {
@@ -387,7 +389,7 @@ public class ReservationController {
     }
 
 
-    @RequestMapping(value = "/event/{eventName}/reservation/{reservationId}", method = RequestMethod.POST)
+    @PostMapping(value = "/event/{eventName}/reservation/{reservationId}")
     public String handleReservation(@PathVariable("eventName") String eventName,
             @PathVariable("reservationId") String reservationId, PaymentForm paymentForm, BindingResult bindingResult,
             Model model, HttpServletRequest request, Locale locale, RedirectAttributes redirectAttributes) {
@@ -477,7 +479,7 @@ public class ReservationController {
         }
     }
 
-    @RequestMapping(value = "/event/{eventName}/reservation/{reservationId}/re-send-email", method = RequestMethod.POST)
+    @PostMapping(value = "/event/{eventName}/reservation/{reservationId}/re-send-email")
     public String reSendReservationConfirmationEmail(@PathVariable("eventName") String eventName,
             @PathVariable("reservationId") String reservationId, HttpServletRequest request) {
 
@@ -496,7 +498,7 @@ public class ReservationController {
     }
 
 
-    @RequestMapping(value = "/event/{eventName}/reservation/{reservationId}/ticket/{ticketIdentifier}/assign", method = RequestMethod.POST)
+    @PostMapping(value = "/event/{eventName}/reservation/{reservationId}/ticket/{ticketIdentifier}/assign")
     public String assignTicketToPerson(@PathVariable("eventName") String eventName,
                                        @PathVariable("reservationId") String reservationId,
                                        @PathVariable("ticketIdentifier") String ticketIdentifier,

@@ -46,6 +46,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -115,7 +117,7 @@ public class EventController {
         return ResponseEntity.ok("Up and running!");
     }
 
-    @RequestMapping(value = {"/"}, method = RequestMethod.GET)
+    @GetMapping(value = {"/"})
     public String listEvents(Model model, Locale locale) {
         List<Event> events = eventManager.getPublishedEvents();
         if(events.size() == 1) {
@@ -142,7 +144,7 @@ public class EventController {
         return "/event/session-expired";
     }
 
-    @RequestMapping(value = "/event/{eventName}/promoCode/{promoCode}", method = RequestMethod.POST)
+    @PostMapping(value = "/event/{eventName}/promoCode/{promoCode}")
     @ResponseBody
     public ValidationResult savePromoCode(@PathVariable("eventName") String eventName,
                                  @PathVariable("promoCode") String promoCode,

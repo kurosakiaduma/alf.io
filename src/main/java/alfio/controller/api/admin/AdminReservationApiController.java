@@ -49,30 +49,30 @@ public class AdminReservationApiController {
         this.ticketReservationManager = ticketReservationManager;
     }
 
-    @RequestMapping(value = "/event/{eventName}/new", method = RequestMethod.POST)
+    @PostMapping(value = "/event/{eventName}/new")
     public Result<String> createNew(@PathVariable("eventName") String eventName, @RequestBody AdminReservationModification reservation, Principal principal) {
         return adminReservationManager.createReservation(reservation, eventName, principal.getName()).map(r -> r.getLeft().getId());
     }
 
-    @RequestMapping(value = "/event/{eventName}/{reservationId}/confirm", method = RequestMethod.PUT)
+    @PutMapping(value = "/event/{eventName}/{reservationId}/confirm")
     public Result<TicketReservationDescriptor> confirmReservation(@PathVariable("eventName") String eventName, @PathVariable("reservationId") String reservationId, Principal principal) {
         return adminReservationManager.confirmReservation(eventName, reservationId, principal.getName())
             .map(triple -> toReservationDescriptor(reservationId, triple));
     }
 
-    @RequestMapping(value = "/event/{eventName}/{reservationId}", method = RequestMethod.POST)
+    @PostMapping(value = "/event/{eventName}/{reservationId}")
     public Result<Boolean> updateReservation(@PathVariable("eventName") String eventName, @PathVariable("reservationId") String reservationId,
                                              @RequestBody AdminReservationModification arm, Principal principal) {
         return adminReservationManager.updateReservation(eventName, reservationId, arm, principal.getName());
     }
 
-    @RequestMapping(value = "/event/{eventName}/{reservationId}/notify", method = RequestMethod.PUT)
+    @PutMapping(value = "/event/{eventName}/{reservationId}/notify")
     public Result<Boolean> notifyReservation(@PathVariable("eventName") String eventName, @PathVariable("reservationId") String reservationId,
                                              @RequestBody AdminReservationModification arm, Principal principal) {
         return adminReservationManager.notify(eventName, reservationId, arm, principal.getName());
     }
 
-    @RequestMapping(value = "/event/{eventName}/{reservationId}", method = RequestMethod.GET)
+    @GetMapping(value = "/event/{eventName}/{reservationId}")
     public Result<TicketReservationDescriptor> loadReservation(@PathVariable("eventName") String eventName, @PathVariable("reservationId") String reservationId, Principal principal) {
         return adminReservationManager.loadReservation(eventName, reservationId, principal.getName())
             .map(triple -> toReservationDescriptor(reservationId, triple));

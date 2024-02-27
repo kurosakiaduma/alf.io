@@ -122,7 +122,7 @@ public class RestEventApiController {
 
 
      */
-    @RequestMapping(value = "events/{shortName}/reserve-tickets", method = RequestMethod.POST)
+    @PostMapping(value = "events/{shortName}/reserve-tickets")
     public ResponseEntity<Result<String>> reserveTickets(@PathVariable("shortName") String shortName, @RequestBody ReservationForm reservation, BindingResult bindingResult, Locale locale) {
         return eventRepository.findOptionalByShortName(shortName).map(event -> {
             Optional<String> reservationUrl = reservation.validate(bindingResult, ticketReservationManager, ticketCategoryDescriptionRepository, additionalServiceRepository, eventManager, event, locale).flatMap(selected -> {

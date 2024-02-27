@@ -26,7 +26,10 @@ import alfio.model.system.ConfigurationKeys;
 import alfio.model.user.Organization;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -53,90 +56,90 @@ public class SettingsApiController {
         this.pluginManager = pluginManager;
     }
 
-    @RequestMapping(value = "/configuration/load", method = GET)
+    @GetMapping(value = "/configuration/load")
     public Map<ConfigurationKeys.SettingCategory, List<Configuration>> loadConfiguration(Principal principal) {
         return configurationManager.loadAllSystemConfigurationIncludingMissing(principal.getName());
     }
 
-    @RequestMapping(value = "/configuration/update", method = POST)
+    @PostMapping(value = "/configuration/update")
     public boolean updateConfiguration(@RequestBody ConfigurationModification configuration) {
         configurationManager.saveSystemConfiguration(ConfigurationKeys.fromString(configuration.getKey()), configuration.getValue());
         return true;
     }
 
-    @RequestMapping(value = "/configuration/update-bulk", method = POST)
+    @PostMapping(value = "/configuration/update-bulk")
     public boolean updateConfiguration(@RequestBody Map<ConfigurationKeys.SettingCategory, List<ConfigurationModification>> input) {
         List<ConfigurationModification> list = Objects.requireNonNull(input).values().stream().flatMap(Collection::stream).collect(Collectors.toList());
         configurationManager.saveAllSystemConfiguration(list);
         return true;
     }
 
-    @RequestMapping(value = "/configuration/organizations/{organizationId}/load", method = GET)
+    @GetMapping(value = "/configuration/organizations/{organizationId}/load")
     public Map<ConfigurationKeys.SettingCategory, List<Configuration>> loadOrganizationConfiguration(@PathVariable("organizationId") int organizationId, Principal principal) {
         return configurationManager.loadOrganizationConfig(organizationId, principal.getName());
     }
 
-    @RequestMapping(value = "/configuration/organizations/{organizationId}/update", method = POST)
+    @PostMapping(value = "/configuration/organizations/{organizationId}/update")
     public boolean updateOrganizationConfiguration(@PathVariable("organizationId") int organizationId,
                                                                      @RequestBody Map<ConfigurationKeys.SettingCategory, List<ConfigurationModification>> input, Principal principal) {
         configurationManager.saveAllOrganizationConfiguration(organizationId, input.values().stream().flatMap(Collection::stream).collect(Collectors.toList()), principal.getName());
         return true;
     }
 
-    @RequestMapping(value = "/configuration/events/{eventId}/load", method = GET)
+    @GetMapping(value = "/configuration/events/{eventId}/load")
     public Map<ConfigurationKeys.SettingCategory, List<Configuration>> loadEventConfiguration(@PathVariable("eventId") int eventId, Principal principal) {
         return configurationManager.loadEventConfig(eventId, principal.getName());
     }
 
-    @RequestMapping(value = "/configuration/organizations/{organizationId}/events/{eventId}/update", method = POST)
+    @PostMapping(value = "/configuration/organizations/{organizationId}/events/{eventId}/update")
     public boolean updateEventConfiguration(@PathVariable("organizationId") int organizationId, @PathVariable("eventId") int eventId,
                                                     @RequestBody Map<ConfigurationKeys.SettingCategory, List<ConfigurationModification>> input, Principal principal) {
         configurationManager.saveEventConfiguration(eventId, organizationId, input.values().stream().flatMap(Collection::stream).collect(Collectors.toList()), principal.getName());
         return true;
     }
 
-    @RequestMapping(value = "/configuration/events/{eventId}/categories/{categoryId}/update", method = POST)
+    @PostMapping(value = "/configuration/events/{eventId}/categories/{categoryId}/update")
     public boolean updateCategoryConfiguration(@PathVariable("categoryId") int categoryId, @PathVariable("eventId") int eventId,
                                                     @RequestBody Map<ConfigurationKeys.SettingCategory, List<ConfigurationModification>> input, Principal principal) {
         configurationManager.saveCategoryConfiguration(categoryId, eventId, input.values().stream().flatMap(Collection::stream).collect(Collectors.toList()), principal.getName());
         return true;
     }
 
-    @RequestMapping(value = "/configuration/events/{eventId}/categories/{categoryId}/load", method = GET)
+    @GetMapping(value = "/configuration/events/{eventId}/categories/{categoryId}/load")
     public Map<ConfigurationKeys.SettingCategory, List<Configuration>> loadCategoryConfiguration(@PathVariable("eventId") int eventId, @PathVariable("categoryId") int categoryId, Principal principal) {
         return configurationManager.loadCategoryConfig(eventId, categoryId, principal.getName());
     }
 
-    @RequestMapping(value = "/configuration/events/{eventId}/plugin/load", method = GET)
+    @GetMapping(value = "/configuration/events/{eventId}/plugin/load")
     public List<PluginConfigOption> loadPluginConfiguration(@PathVariable("eventId") int eventId, Principal principal) {
         return pluginManager.loadAllConfigOptions(eventId, principal.getName());
     }
 
-    @RequestMapping(value = "/configuration/events/{eventId}/plugin/update-bulk", method = POST)
+    @PostMapping(value = "/configuration/events/{eventId}/plugin/update-bulk")
     public boolean updatePluginConfiguration(@PathVariable int eventId, @RequestBody List<PluginConfigOptionModification> input, Principal principal) {
         pluginManager.saveAllConfigOptions(eventId, Objects.requireNonNull(input), principal.getName());
         return true;
     }
 
-    @RequestMapping(value = "/configuration/organization/{organizationId}/key/{key}", method = DELETE)
+    @DeleteMapping(value = "/configuration/organization/{organizationId}/key/{key}")
     public boolean deleteOrganizationLevelKey(@PathVariable("organizationId") int organizationId, @PathVariable("key") ConfigurationKeys key, Principal principal) {
         configurationManager.deleteOrganizationLevelByKey(key.getValue(), organizationId, principal.getName());
         return true;
     }
 
-    @RequestMapping(value = "/configuration/event/{eventId}/key/{key}", method = DELETE)
+    @DeleteMapping(value = "/configuration/event/{eventId}/key/{key}")
     public boolean deleteEventLevelKey(@PathVariable("eventId") int eventId, @PathVariable("key") ConfigurationKeys key, Principal principal) {
         configurationManager.deleteEventLevelByKey(key.getValue(), eventId, principal.getName());
         return true;
     }
 
-    @RequestMapping(value = "/configuration/event/{eventId}/category/{categoryId}/key/{key}", method = DELETE)
+    @DeleteMapping(value = "/configuration/event/{eventId}/category/{categoryId}/key/{key}")
     public boolean deleteCategoryLevelKey(@PathVariable("eventId") int eventId, @PathVariable("categoryId") int categoryId, @PathVariable("key") ConfigurationKeys key, Principal principal) {
         configurationManager.deleteCategoryLevelByKey(key.getValue(), eventId, categoryId, principal.getName());
         return true;
     }
 
-    @RequestMapping(value = "/configuration/key/{key}", method = DELETE)
+    @DeleteMapping(value = "/configuration/key/{key}")
     public boolean deleteKey(@PathVariable("key") String key) {
         configurationManager.deleteKey(key);
         return true;

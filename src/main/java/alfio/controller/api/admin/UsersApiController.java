@@ -44,6 +44,10 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.*;
 import java.util.stream.Collectors;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
@@ -70,7 +74,7 @@ public class UsersApiController {
         return e.getMessage();
     }
 
-    @RequestMapping(value = "/roles", method = GET)
+    @GetMapping(value = "/roles")
     public Collection<RoleDescriptor> getAllRoles(Principal principal) {
         return userManager.getAvailableRoles(principal.getName()).stream().map(RoleDescriptor::new).collect(Collectors.toList());
     }
@@ -79,7 +83,7 @@ public class UsersApiController {
      * This endpoint is intended only for external use. If a user is registered as "sponsor", then the answer will be "SPONSOR", otherwise "OPERATOR".
      * @return "SPONSOR" or "OPERATOR", depending on current user's privileges.
      */
-    @RequestMapping(value = "/user-type", method = GET)
+    @GetMapping(value = "/user-type")
     public String getLoggedUserType() {
         return SecurityContextHolder.getContext()
             .getAuthentication()
@@ -92,60 +96,60 @@ public class UsersApiController {
             .orElse(WebSecurityConfig.OPERATOR);
     }
 
-    @RequestMapping(value = "/organizations", method = GET)
+    @GetMapping(value = "/organizations")
     @ResponseStatus(HttpStatus.OK)
     public List<Organization> getAllOrganizations(Principal principal) {
         return userManager.findUserOrganizations(principal.getName());
     }
 
-    @RequestMapping(value = "/organizations/{id}", method = GET)
+    @GetMapping(value = "/organizations/{id}")
     public Organization getOrganization(@PathVariable("id") int id, Principal principal) {
         return userManager.findOrganizationById(id, principal.getName());
     }
 
-    @RequestMapping(value = "/users", method = GET)
+    @GetMapping(value = "/users")
     public List<User> getAllUsers(Principal principal) {
         return userManager.findAllUsers(principal.getName());
     }
 
 
-    @RequestMapping(value = "/organizations/new", method = POST)
+    @PostMapping(value = "/organizations/new")
     public String insertOrganization(@RequestBody OrganizationModification om) {
         userManager.createOrganization(om.getName(), om.getDescription(), om.getEmail());
         return OK;
     }
 
-    @RequestMapping(value = "/organizations/update", method = POST)
+    @PostMapping(value = "/organizations/update")
     public String updateOrganization(@RequestBody OrganizationModification om) {
         userManager.updateOrganization(om.getId(), om.getName(), om.getEmail(), om.getDescription());
         return OK;
     }
 
-    @RequestMapping(value = "/organizations/check", method = POST)
+    @PostMapping(value = "/organizations/check")
     public ValidationResult validateOrganization(@RequestBody OrganizationModification om) {
         return userManager.validateOrganization(om.getId(), om.getName(), om.getEmail(), om.getDescription());
     }
 
-    @RequestMapping(value = "/users/check", method = POST)
+    @PostMapping(value = "/users/check")
     public ValidationResult validateUser(@RequestBody UserModification userModification) {
         return userManager.validateUser(userModification.getId(), userModification.getUsername(),
                 userModification.getOrganizationId(), userModification.getRole(), userModification.getFirstName(),
                 userModification.getLastName(), userModification.getEmailAddress());
     }
 
-    @RequestMapping(value = "/users/edit", method = POST)
+    @PostMapping(value = "/users/edit")
     public String editUser(@RequestBody UserModification userModification, Principal principal) {
         userManager.editUser(userModification.getId(), userModification.getOrganizationId(), userModification.getUsername(), userModification.getFirstName(), userModification.getLastName(), userModification.getEmailAddress(), Role.valueOf(userModification.getRole()), principal.getName());
         return OK;
     }
 
-    @RequestMapping(value = "/users/update-password", method = POST)
+    @PostMapping(value = "/users/update-password")
     public ValidationResult updatePassword(@RequestBody PasswordModification passwordModification, Principal principal) {
         return userManager.validateNewPassword(principal.getName(), passwordModification.oldPassword, passwordModification.newPassword, passwordModification.newPasswordConfirm)
             .ifSuccess(() -> userManager.updatePassword(principal.getName(), passwordModification.newPassword));
     }
 
-    @RequestMapping(value = "/users/new", method = POST)
+    @PostMapping(value = "/users/new")
     public UserWithPassword insertUser(@RequestBody UserModification userModification, HttpSession session, Principal principal) {
         Role requested = Role.valueOf(userModification.getRole());
         Validate.isTrue(userManager.getAvailableRoles(principal.getName()).stream().anyMatch(requested::equals), String.format("Requested role %s is not available for current user", userModification.getRole()));
@@ -154,7 +158,7 @@ public class UsersApiController {
         return userWithPassword;
     }
 
-    @RequestMapping(value = "/users/{identifier}.png", method = GET)
+    @GetMapping(value = "/users/{identifier}.png")
     public void loadUserImage(@PathVariable("identifier") String identifier, @RequestParam("baseUrl") String baseUrl, HttpSession session, HttpServletResponse response) throws IOException {
         Optional<UserWithPassword> optional = Optional.ofNullable((UserWithPassword) session.getAttribute(USER_WITH_PASSWORD_KEY))
                                                        .filter(a -> identifier.equals(a.getUniqueId()));
@@ -174,27 +178,27 @@ public class UsersApiController {
     }
 
 
-    @RequestMapping(value = "/users/{id}", method = DELETE)
+    @DeleteMapping(value = "/users/{id}")
     public String deleteUser(@PathVariable("id") int userId, Principal principal) {
         userManager.deleteUser(userId, principal.getName());
         return OK;
     }
 
-    @RequestMapping(value = "/users/{id}", method = GET)
+    @GetMapping(value = "/users/{id}")
     public UserModification loadUser(@PathVariable("id") int userId) {
         User user = userManager.findUser(userId);
         List<Organization> userOrganizations = userManager.findUserOrganizations(user);
         return new UserModification(user.getId(), userOrganizations.get(0).getId(), userManager.getUserRole(user).name(), user.getUsername(), user.getFirstName(), user.getLastName(), user.getEmailAddress());
     }
 
-    @RequestMapping(value = "/users/current", method = GET)
+    @GetMapping(value = "/users/current")
     public UserModification loadCurrentUser(Principal principal) {
         User user = userManager.findUserByUsername(principal.getName());
         List<Organization> userOrganizations = userManager.findUserOrganizations(user);
         return new UserModification(user.getId(), userOrganizations.get(0).getId(), userManager.getUserRole(user).name(), user.getUsername(), user.getFirstName(), user.getLastName(), user.getEmailAddress());
     }
 
-    @RequestMapping(value = "/users/{id}/reset-password", method = PUT)
+    @PutMapping(value = "/users/{id}/reset-password")
     public UserWithPassword resetPassword(@PathVariable("id") int userId, HttpSession session) {
         UserWithPassword userWithPassword = userManager.resetPassword(userId);
         storePasswordImage(session, userWithPassword);

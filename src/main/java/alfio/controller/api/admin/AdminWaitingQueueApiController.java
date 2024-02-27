@@ -23,7 +23,10 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -48,7 +51,7 @@ public class AdminWaitingQueueApiController {
         this.eventManager = eventManager;
     }
 
-    @RequestMapping(value = "/count", method = RequestMethod.GET)
+    @GetMapping(value = "/count")
     public Integer countWaitingPeople(@PathVariable("eventName") String eventName, Principal principal, HttpServletResponse response) {
         Optional<Integer> count = optionally(() -> eventManager.getSingleEvent(eventName, principal.getName())).map(e -> waitingQueueManager.countSubscribers(e.getId()));
         if(count.isPresent()) {
@@ -58,7 +61,7 @@ public class AdminWaitingQueueApiController {
         return 0;
     }
 
-    @RequestMapping(value = "/load", method = RequestMethod.GET)
+    @GetMapping(value = "/load")
     public List<WaitingQueueSubscription> loadAllSubscriptions(@PathVariable("eventName") String eventName, Principal principal, HttpServletResponse response) {
         Optional<List<WaitingQueueSubscription>> count = optionally(() -> eventManager.getSingleEvent(eventName, principal.getName())).map(e -> waitingQueueManager.loadAllSubscriptionsForEvent(e.getId()));
         if(count.isPresent()) {
@@ -68,14 +71,14 @@ public class AdminWaitingQueueApiController {
         return Collections.emptyList();
     }
 
-    @RequestMapping(value = "/subscriber/{subscriberId}", method = RequestMethod.DELETE)
+    @DeleteMapping(value = "/subscriber/{subscriberId}")
     public ResponseEntity<Map<String, Object>> removeSubscriber(@PathVariable("eventName") String eventName,
                                                                 @PathVariable("subscriberId") int subscriberId,
                                                                 Principal principal) {
         return performStatusModification(eventName, subscriberId, principal, WaitingQueueSubscription.Status.CANCELLED, WaitingQueueSubscription.Status.WAITING);
     }
 
-    @RequestMapping(value = "/subscriber/{subscriberId}/restore", method = RequestMethod.PUT)
+    @PutMapping(value = "/subscriber/{subscriberId}/restore")
     public ResponseEntity<Map<String, Object>> restoreSubscriber(@PathVariable("eventName") String eventName,
                                                                      @PathVariable("subscriberId") int subscriberId,
                                                                      Principal principal) {

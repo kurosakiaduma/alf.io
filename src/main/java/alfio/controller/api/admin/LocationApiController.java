@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 import java.util.TimeZone;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
@@ -58,7 +59,7 @@ public class LocationApiController {
         return e.getMessage();
     }
 
-    @RequestMapping(value = "/location/geo", method = GET)
+    @GetMapping(value = "/location/geo")
     public LocationDescriptor geocodeAddress(@RequestParam("location") String address) {
         Pair<String, String> coordinates = locationManager.geocode(address);
         TimeZone timezone = locationManager.getTimezone(coordinates);
@@ -69,7 +70,7 @@ public class LocationApiController {
         return configurationManager.getStringConfigValue(Configuration.getSystemConfiguration(ConfigurationKeys.MAPS_CLIENT_API_KEY));
     }
 
-    @RequestMapping(value = "/location/map", method = GET)
+    @GetMapping(value = "/location/map")
     public String getMapUrl(@RequestParam("lat") String latitude, @RequestParam("long") String longitude) {
         Validate.notBlank(latitude);
         Validate.notBlank(longitude);
