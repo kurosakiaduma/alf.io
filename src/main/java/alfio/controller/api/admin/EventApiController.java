@@ -38,6 +38,7 @@ import alfio.util.TemplateManager;
 import alfio.util.Validator;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
+import io.github.pixee.security.Newlines;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
@@ -286,7 +287,7 @@ public class EventApiController {
         Predicate<String> contains = FIXED_FIELDS::contains;
 
         response.setContentType("text/csv;charset=UTF-8");
-        response.setHeader("Content-Disposition", "attachment; filename=" + eventName + "-export.csv");
+        response.setHeader("Content-Disposition", Newlines.stripAll("attachment; filename=" + eventName + "-export.csv"));
 
         try(ServletOutputStream out = response.getOutputStream(); CSVWriter writer = new CSVWriter(new OutputStreamWriter(out))) {
 
@@ -337,7 +338,7 @@ public class EventApiController {
         List<TicketFieldConfiguration> fields = ticketFieldRepository.findAdditionalFieldsForEvent(event.getId());
 
         response.setContentType("text/csv;charset=UTF-8");
-        response.setHeader("Content-Disposition", "attachment; filename=" + eventName + "-sponsor-scan.csv");
+        response.setHeader("Content-Disposition", Newlines.stripAll("attachment; filename=" + eventName + "-sponsor-scan.csv"));
 
         try(ServletOutputStream out = response.getOutputStream(); CSVWriter writer = new CSVWriter(new OutputStreamWriter(out))) {
             for (int marker : BOM_MARKERS) {
@@ -484,7 +485,7 @@ public class EventApiController {
         Event event = loadEvent(eventName, principal);
 
         response.setContentType("application/zip");
-        response.setHeader("Content-Disposition", "attachment; filename=" + eventName + "-invoices.zip");
+        response.setHeader("Content-Disposition", Newlines.stripAll("attachment; filename=" + eventName + "-invoices.zip"));
 
         try(OutputStream os = response.getOutputStream(); ZipOutputStream zipOS = new ZipOutputStream(os)) {
             for (TicketReservation reservation : ticketReservationManager.findAllInvoices(event.getId())) {
