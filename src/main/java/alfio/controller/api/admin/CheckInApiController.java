@@ -30,6 +30,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
@@ -51,17 +53,17 @@ public class CheckInApiController {
         this.checkInManager = checkInManager;
     }
     
-    @RequestMapping(value = "/check-in/{eventId}/ticket/{ticketIdentifier}", method = GET)
+    @GetMapping(value = "/check-in/{eventId}/ticket/{ticketIdentifier}")
     public TicketAndCheckInResult findTicketWithUUID(@PathVariable("eventId") int eventId, @PathVariable("ticketIdentifier") String ticketIdentifier, @RequestParam("qrCode") String qrCode) {
         return checkInManager.evaluateTicketStatus(eventId, ticketIdentifier, Optional.ofNullable(qrCode));
     }
 
-    @RequestMapping(value = "/check-in/event/{eventName}/ticket/{ticketIdentifier}", method = GET)
+    @GetMapping(value = "/check-in/event/{eventName}/ticket/{ticketIdentifier}")
     public TicketAndCheckInResult findTicketWithUUID(@PathVariable("eventName") String eventName, @PathVariable("ticketIdentifier") String ticketIdentifier, @RequestParam("qrCode") String qrCode) {
         return checkInManager.evaluateTicketStatus(eventName, ticketIdentifier, Optional.ofNullable(qrCode));
     }
 
-    @RequestMapping(value = "/check-in/{eventId}/ticket/{ticketIdentifier}", method = POST)
+    @PostMapping(value = "/check-in/{eventId}/ticket/{ticketIdentifier}")
     public TicketAndCheckInResult checkIn(@PathVariable("eventId") int eventId,
                                           @PathVariable("ticketIdentifier") String ticketIdentifier,
                                           @RequestBody TicketCode ticketCode,
@@ -69,7 +71,7 @@ public class CheckInApiController {
         return checkInManager.checkIn(eventId, ticketIdentifier, Optional.ofNullable(ticketCode).map(TicketCode::getCode), principal.getName());
     }
 
-    @RequestMapping(value = "/check-in/event/{eventName}/ticket/{ticketIdentifier}", method = POST)
+    @PostMapping(value = "/check-in/event/{eventName}/ticket/{ticketIdentifier}")
     public TicketAndCheckInResult checkIn(@PathVariable("eventName") String eventName,
                                           @PathVariable("ticketIdentifier") String ticketIdentifier,
                                           @RequestBody TicketCode ticketCode,
@@ -79,7 +81,7 @@ public class CheckInApiController {
         return checkInManager.checkIn(eventName, ticketIdentifier, Optional.ofNullable(ticketCode).map(TicketCode::getCode), user);
     }
 
-    @RequestMapping(value = "/check-in/{eventId}/ticket/{ticketIdentifier}/manual-check-in", method = POST)
+    @PostMapping(value = "/check-in/{eventId}/ticket/{ticketIdentifier}/manual-check-in")
     public boolean manualCheckIn(@PathVariable("eventId") int eventId,
                                  @PathVariable("ticketIdentifier") String ticketIdentifier,
                                  Principal principal) {
@@ -87,7 +89,7 @@ public class CheckInApiController {
         return checkInManager.manualCheckIn(eventId, ticketIdentifier, principal.getName());
     }
 
-    @RequestMapping(value = "/check-in/{eventId}/ticket/{ticketIdentifier}/revert-check-in", method = POST)
+    @PostMapping(value = "/check-in/{eventId}/ticket/{ticketIdentifier}/revert-check-in")
     public boolean revertCheckIn(@PathVariable("eventId") int eventId,
                                  @PathVariable("ticketIdentifier") String ticketIdentifier,
                                  Principal principal) {
@@ -95,7 +97,7 @@ public class CheckInApiController {
         return checkInManager.revertCheckIn(eventId, ticketIdentifier, principal.getName());
     }
 
-    @RequestMapping(value = "/check-in/event/{eventName}/ticket/{ticketIdentifier}/confirm-on-site-payment", method = POST)
+    @PostMapping(value = "/check-in/event/{eventName}/ticket/{ticketIdentifier}/confirm-on-site-payment")
     public TicketAndCheckInResult confirmOnSitePayment(@PathVariable("eventName") String eventName,
                                                        @PathVariable("ticketIdentifier") String ticketIdentifier,
                                                        @RequestBody TicketCode ticketCode,
@@ -105,19 +107,19 @@ public class CheckInApiController {
         return checkInManager.confirmOnSitePayment(eventName, ticketIdentifier, Optional.ofNullable(ticketCode).map(TicketCode::getCode), user);
     }
     
-    @RequestMapping(value = "/check-in/{eventId}/ticket/{ticketIdentifier}/confirm-on-site-payment", method = POST)
+    @PostMapping(value = "/check-in/{eventId}/ticket/{ticketIdentifier}/confirm-on-site-payment")
     public OnSitePaymentConfirmation confirmOnSitePayment(@PathVariable("eventId") int eventId, @PathVariable("ticketIdentifier") String ticketIdentifier) {
         return checkInManager.confirmOnSitePayment(ticketIdentifier)
             .map(s -> new OnSitePaymentConfirmation(true, "ok"))
             .orElseGet(() -> new OnSitePaymentConfirmation(false, "Ticket with uuid " + ticketIdentifier + " not found"));
     }
     
-    @RequestMapping(value = "/check-in/{eventId}/ticket", method = GET)
+    @GetMapping(value = "/check-in/{eventId}/ticket")
     public List<FullTicketInfo> listAllTickets(@PathVariable("eventId") int eventId) {
         return checkInManager.findAllFullTicketInfo(eventId);
     }
 
-    @RequestMapping(value = "/check-in/{eventName}/offline", method = RequestMethod.GET)
+    @GetMapping(value = "/check-in/{eventName}/offline")
     public Map<String, String> getOfflineEncryptedInfo(@PathVariable("eventName") String eventName) {
         return checkInManager.getEncryptedAttendeesInformation(eventName, Collections.singleton("company"));
     }

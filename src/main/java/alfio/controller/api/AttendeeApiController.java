@@ -66,12 +66,12 @@ public class AttendeeApiController {
     }
 
 
-    @RequestMapping(value = "/sponsor-scan", method = RequestMethod.POST)
+    @PostMapping(value = "/sponsor-scan")
     public ResponseEntity<TicketAndCheckInResult> scanBadge(@RequestBody SponsorScanRequest request, Principal principal) {
         return ResponseEntity.ok(attendeeManager.registerSponsorScan(request.eventName, request.ticketIdentifier, principal.getName()));
     }
 
-    @RequestMapping(value = "/sponsor-scan/bulk", method = RequestMethod.POST)
+    @PostMapping(value = "/sponsor-scan/bulk")
     public ResponseEntity<List<TicketAndCheckInResult>> scanBadges(@RequestBody List<SponsorScanRequest> requests, Principal principal) {
         String username = principal.getName();
         return ResponseEntity.ok(requests.stream()
@@ -79,7 +79,7 @@ public class AttendeeApiController {
             .collect(Collectors.toList()));
     }
 
-    @RequestMapping(value = "/{eventKey}/sponsor-scan/mine", method = RequestMethod.GET)
+    @GetMapping(value = "/{eventKey}/sponsor-scan/mine")
     public ResponseEntity<List<SponsorAttendeeData>> getScannedBadges(@PathVariable("eventKey") String eventShortName, @RequestParam(value = "from", required = false) String from, Principal principal) {
 
         ZonedDateTime start = Optional.ofNullable(StringUtils.trimToNull(from))

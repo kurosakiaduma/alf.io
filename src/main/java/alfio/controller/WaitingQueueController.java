@@ -27,8 +27,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -44,7 +43,7 @@ public class WaitingQueueController {
         this.eventRepository = eventRepository;
     }
 
-    @RequestMapping(value = "/event/{eventName}/waiting-queue/subscribe", method = RequestMethod.POST)
+    @PostMapping(value = "/event/{eventName}/waiting-queue/subscribe")
     public String subscribe(@ModelAttribute WaitingQueueSubscriptionForm subscription, BindingResult bindingResult, Model model, @PathVariable("eventName") String eventName, RedirectAttributes redirectAttributes) {
         Event event = eventRepository.findOptionalByShortName(eventName).orElseThrow(IllegalArgumentException::new);
         Validator.validateWaitingQueueSubscription(subscription, bindingResult, event).ifSuccess(() -> {

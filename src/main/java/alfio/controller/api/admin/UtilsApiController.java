@@ -27,6 +27,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -60,12 +62,12 @@ public class UtilsApiController {
         return new ResponseEntity<>("missing parameters", HttpStatus.BAD_REQUEST);
     }
 
-    @RequestMapping(value = "/short-name/generate", method = GET)
+    @GetMapping(value = "/short-name/generate")
     public String generateShortName(@RequestParam("displayName") String displayName) {
         return eventNameManager.generateShortName(displayName);
     }
 
-    @RequestMapping(value = "/short-name/validate", method = POST)
+    @PostMapping(value = "/short-name/validate")
     public boolean validateShortName(@RequestParam("shortName") String shortName, HttpServletResponse response) {
         boolean unique = eventNameManager.isUnique(shortName);
         if(!unique) {
@@ -79,7 +81,7 @@ public class UtilsApiController {
     	return MustacheCustomTagInterceptor.renderToCommonmark(StringEscapeUtils.escapeHtml4(input));
     }
 
-    @RequestMapping(value = "/alfio/info", method = GET)
+    @GetMapping(value = "/alfio/info")
     public Map<String, String> getApplicationInfo(Principal principal) {
         Map<String, String> applicationInfo = new HashMap<>();
         applicationInfo.put("version", version);
@@ -87,7 +89,7 @@ public class UtilsApiController {
         return applicationInfo;
     }
 
-    @RequestMapping(value = "/currencies", method = GET)
+    @GetMapping(value = "/currencies")
     public List<CurrencyDescriptor> getCurrencies() {
         return Currency.getAvailableCurrencies().stream()
             .filter(c -> c.getDefaultFractionDigits() == 2 && !CURRENCIES_BLACKLIST.contains(c.getCurrencyCode())) //currencies which don't support cents are filtered out. Support will be implemented in the next version

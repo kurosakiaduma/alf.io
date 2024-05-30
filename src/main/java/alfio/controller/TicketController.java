@@ -89,13 +89,13 @@ public class TicketController {
         this.ticketHelper = ticketHelper;
     }
 
-    @RequestMapping(value = "/event/{eventName}/reservation/{reservationId}/{ticketIdentifier}", method = RequestMethod.GET)
+    @GetMapping(value = "/event/{eventName}/reservation/{reservationId}/{ticketIdentifier}")
     public String showTicketOLD(@PathVariable("eventName") String eventName, @PathVariable("reservationId") String reservationId,
                              @PathVariable("ticketIdentifier") String ticketIdentifier) {
         return "redirect:/event/"+eventName+"/ticket/"+ticketIdentifier;
     }
 
-    @RequestMapping(value = "/event/{eventName}/ticket/{ticketIdentifier}", method = RequestMethod.GET)
+    @GetMapping(value = "/event/{eventName}/ticket/{ticketIdentifier}")
     public String showTicket(@PathVariable("eventName") String eventName,
             @PathVariable("ticketIdentifier") String ticketIdentifier,
             @RequestParam(value = "ticket-email-sent", required = false, defaultValue = "false") boolean ticketEmailSent,
@@ -105,13 +105,13 @@ public class TicketController {
 
     }
 
-    @RequestMapping(value = "/event/{eventName}/reservation/{reservationId}/ticket/{ticketIdentifier}/view", method = RequestMethod.GET)
+    @GetMapping(value = "/event/{eventName}/reservation/{reservationId}/ticket/{ticketIdentifier}/view")
     public String showTicketFromTicketDetailOLD(@PathVariable("eventName") String eventName, @PathVariable("reservationId") String reservationId,
                                              @PathVariable("ticketIdentifier") String ticketIdentifier) {
         return "redirect:/event/"+eventName+"/ticket/"+ticketIdentifier+"/view";
     }
 
-    @RequestMapping(value = "/event/{eventName}/ticket/{ticketIdentifier}/view", method = RequestMethod.GET)
+    @GetMapping(value = "/event/{eventName}/ticket/{ticketIdentifier}/view")
     public String showTicketFromTicketDetail(@PathVariable("eventName") String eventName,
                                              @PathVariable("ticketIdentifier") String ticketIdentifier,
                                              @RequestParam(value = "ticket-email-sent", required = false, defaultValue = "false") boolean ticketEmailSent,
@@ -119,12 +119,12 @@ public class TicketController {
         return internalShowTicket(eventName, ticketIdentifier, ticketEmailSent, model, "ticket/"+ticketIdentifier+"/update", locale);
     }
 
-    @RequestMapping(value = "/event/{eventName}/reservation/{reservationId}/ticket/{ticketIdentifier}/update", method = RequestMethod.GET)
+    @GetMapping(value = "/event/{eventName}/reservation/{reservationId}/ticket/{ticketIdentifier}/update")
     public String showTicketForUpdateOLD(@PathVariable("eventName") String eventName, @PathVariable("reservationId") String reservationId,
                                       @PathVariable("ticketIdentifier") String ticketIdentifier) {
         return "redirect:/event/"+eventName+"/ticket/"+ticketIdentifier+"/update";
     }
-    @RequestMapping(value = "/event/{eventName}/ticket/{ticketIdentifier}/update", method = RequestMethod.GET)
+    @GetMapping(value = "/event/{eventName}/ticket/{ticketIdentifier}/update")
     public String showTicketForUpdate(@PathVariable("eventName") String eventName,
             @PathVariable("ticketIdentifier") String ticketIdentifier, Model model, Locale locale) {
 
@@ -153,7 +153,7 @@ public class TicketController {
     }
 
 
-    @RequestMapping(value = "/event/{eventName}/ticket/{ticketIdentifier}/send-ticket-by-email", method = RequestMethod.POST)
+    @PostMapping(value = "/event/{eventName}/ticket/{ticketIdentifier}/send-ticket-by-email")
     @ResponseBody
     public String sendTicketByEmail(@PathVariable("eventName") String eventName,
                                     @PathVariable("ticketIdentifier") String ticketIdentifier,
@@ -180,7 +180,7 @@ public class TicketController {
         return ticket;
     }
 
-    @RequestMapping(value = "/event/{eventName}/ticket/{ticketIdentifier}/download-ticket", method = RequestMethod.GET)
+    @GetMapping(value = "/event/{eventName}/ticket/{ticketIdentifier}/download-ticket")
     public void generateTicketPdf(@PathVariable("eventName") String eventName,
             @PathVariable("ticketIdentifier") String ticketIdentifier, HttpServletRequest request, HttpServletResponse response) throws IOException, WriterException {
 
@@ -203,7 +203,7 @@ public class TicketController {
         }
     }
     
-    @RequestMapping(value = "/event/{eventName}/ticket/{ticketIdentifier}/code.png", method = RequestMethod.GET)
+    @GetMapping(value = "/event/{eventName}/ticket/{ticketIdentifier}/code.png")
     public void generateTicketCode(@PathVariable("eventName") String eventName,
             @PathVariable("ticketIdentifier") String ticketIdentifier, HttpServletResponse response) throws IOException, WriterException {
         
@@ -225,7 +225,7 @@ public class TicketController {
         
     }
 
-    @RequestMapping(value = "/event/{eventName}/cancel-ticket", method = RequestMethod.POST)
+    @PostMapping(value = "/event/{eventName}/cancel-ticket")
     public String cancelTicket(@PathVariable("eventName") String eventName,
                              @RequestParam("ticketId") String ticketIdentifier) {
         Optional<Triple<Event, TicketReservation, Ticket>> oData = ticketReservationManager.fetchCompleteAndAssigned(eventName, ticketIdentifier);

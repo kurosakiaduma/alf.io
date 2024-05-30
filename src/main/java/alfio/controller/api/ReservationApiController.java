@@ -31,6 +31,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -57,7 +58,7 @@ public class ReservationApiController {
     }
 
 
-    @RequestMapping(value = "/event/{eventName}/ticket/{ticketIdentifier}/assign", method = RequestMethod.POST, headers = "X-Requested-With=XMLHttpRequest")
+    @PostMapping(value = "/event/{eventName}/ticket/{ticketIdentifier}/assign", headers = "X-Requested-With=XMLHttpRequest")
     public Map<String, Object> assignTicketToPerson(@PathVariable("eventName") String eventName,
                                                     @PathVariable("ticketIdentifier") String ticketIdentifier,
                                                     @RequestParam(value = "single-ticket", required = false, defaultValue = "false") boolean singleTicket,

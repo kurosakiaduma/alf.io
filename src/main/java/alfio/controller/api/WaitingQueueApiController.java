@@ -27,8 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
@@ -54,7 +53,7 @@ public class WaitingQueueApiController {
         this.templateManager = templateManager;
     }
 
-    @RequestMapping(value = "/event/{eventName}/waiting-queue/subscribe", method = RequestMethod.POST, headers = "X-Requested-With=XMLHttpRequest")
+    @PostMapping(value = "/event/{eventName}/waiting-queue/subscribe", headers = "X-Requested-With=XMLHttpRequest")
     public Map<String, Object> subscribe(WaitingQueueSubscriptionForm subscription,
                                          BindingResult bindingResult,
                                          Model model,

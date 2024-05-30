@@ -78,7 +78,7 @@ public class SpecialPriceApiController {
         }
     }
 
-    @RequestMapping(value = "/events/{eventName}/categories/{categoryId}/send-codes", method = RequestMethod.POST)
+    @PostMapping(value = "/events/{eventName}/categories/{categoryId}/send-codes")
     public boolean sendCodes(@PathVariable("eventName") String eventName,
                              @PathVariable("categoryId") int categoryId,
                              @RequestBody List<SendCodeModification> codes,
@@ -91,14 +91,14 @@ public class SpecialPriceApiController {
         return true;
     }
 
-    @RequestMapping(value = "/events/{eventName}/categories/{categoryId}/sent-codes", method = RequestMethod.GET)
+    @GetMapping(value = "/events/{eventName}/categories/{categoryId}/sent-codes")
     public List<SpecialPrice> loadSentCodes(@PathVariable("eventName") String eventName,
                                             @PathVariable("categoryId") int categoryId,
                                             Principal principal) {
         return specialPriceManager.loadSentCodes(eventName, categoryId, principal.getName());
     }
 
-    @RequestMapping(value = "/events/{eventName}/categories/{categoryId}/codes/{codeId}/recipient", method = RequestMethod.DELETE)
+    @DeleteMapping(value = "/events/{eventName}/categories/{categoryId}/codes/{codeId}/recipient")
     public boolean clearRecipientData(@PathVariable("eventName") String eventName,
                                       @PathVariable("categoryId") int categoryId,
                                       @PathVariable("codeId") int codeId,
