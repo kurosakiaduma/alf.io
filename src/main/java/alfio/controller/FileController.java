@@ -18,6 +18,7 @@ package alfio.controller;
 
 import alfio.manager.FileUploadManager;
 import alfio.model.FileBlobMetadata;
+import io.github.pixee.security.Newlines;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -52,7 +53,7 @@ public class FileController {
             } else {
                 response.setContentType(metadata.getContentType());
                 response.setContentLength(metadata.getContentSize());
-                response.setHeader("ETag", digest);
+                response.setHeader("ETag", Newlines.stripAll(digest));
                 response.setHeader("Cache-Control", MAX_AGE_6_MONTH);
                 manager.outputFile(digest, response.getOutputStream());
             }
