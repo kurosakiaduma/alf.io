@@ -17,6 +17,7 @@
 package alfio.util;
 
 import alfio.config.Initializer;
+import java.security.SecureRandom;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -68,7 +69,7 @@ public final class PasswordGenerator {
         if(DEV_MODE) {
             return "abcd";
         }
-        Random r = new Random();
+        Random r = new SecureRandom();
         int length = MIN_LENGTH + r.nextInt(MAX_LENGTH - MIN_LENGTH + 1);
         return RandomStringUtils.random(length, PASSWORD_CHARACTERS);
     }
